@@ -40,10 +40,10 @@ class MyApp extends StatelessWidget {
       //   lazy: true,
       //   child: const MyHomePage(title: 'Flutter Demo Home Page')
       // ),
-      home: BlocProvider.value(
-          value: context.read<CounterBloc>(),
-          // create: (context)=> CounterBloc(),
-          // lazy: true,
+      home: BlocProvider<CounterBloc>(
+          // value: context.read<CounterBloc>(),
+          create: (context)=> CounterBloc(),
+          lazy: true,
           child: const MyHomePage(title: 'Flutter Demo Home Page')
       )
     );
