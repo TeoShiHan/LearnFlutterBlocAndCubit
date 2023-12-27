@@ -36,7 +36,16 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // home: BlocProvider<CounterBloc>(create: (context)=> CounterBloc(),
+      //   lazy: true,
+      //   child: const MyHomePage(title: 'Flutter Demo Home Page')
+      // ),
+      home: BlocProvider.value(
+          value: context.read<CounterBloc>(),
+          // create: (context)=> CounterBloc(),
+          // lazy: true,
+          child: const MyHomePage(title: 'Flutter Demo Home Page')
+      )
     );
   }
 }
@@ -112,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
 
                 // TIPS: The bloc parameter
-                bloc: counterBloc,
+                // bloc: counterBloc,
                 builder: (context, state) {
                 return Text(
                   state.count.toString(),
@@ -124,10 +133,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           FloatingActionButton(
             onPressed: (){
-              counterBloc.add(CounterIncrementEvent());
+              context.read<CounterBloc>().add(CounterIncrementEvent());
             },
 
             tooltip: 'Increment',
@@ -136,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           FloatingActionButton(
             onPressed: (){
-              counterBloc.add(CounterDecrementEvent());
+              context.read<CounterBloc>().add(CounterDecrementEvent());
             },
 
             tooltip: 'Decrement',
