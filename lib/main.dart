@@ -1,5 +1,8 @@
 import 'package:counter_app_with_bloc/bloc/counter_event.dart';
 import 'package:counter_app_with_bloc/bloc/counter_state.dart';
+import 'package:counter_app_with_bloc/visibility_bloc/visibility_bloc.dart';
+import 'package:counter_app_with_bloc/visibility_bloc/visibility_event.dart';
+import 'package:counter_app_with_bloc/visibility_bloc/visibility_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -40,12 +43,14 @@ class MyApp extends StatelessWidget {
       //   lazy: true,
       //   child: const MyHomePage(title: 'Flutter Demo Home Page')
       // ),
-      home: BlocProvider<CounterBloc>(
-          // value: context.read<CounterBloc>(),
-          create: (context)=> CounterBloc(),
-          lazy: true,
-          child: const MyHomePage(title: 'Flutter Demo Home Page')
-      )
+      home:
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context)=> VisibilityBloc()),
+            BlocProvider(create: (context)=> CounterBloc()),
+          ],
+            child: const MyHomePage(title: 'Flutter Demo Home Page')
+        )
     );
   }
 }
@@ -69,7 +74,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final counterBloc = CounterBloc();
+  // final counterBloc = CounterBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -108,18 +113,20 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+
+            // widget 1
             const Text(
               'You have pushed the button this many times:',
             ),
-            BlocBuilder<CounterBloc, CounterState>(
 
+            // widget 2
+            BlocBuilder<CounterBloc, CounterState>(
                 // TIPS : The build when parameter
                 buildWhen: (previous, current) {
                   print("Previous ${previous.count}");
                   print("Current ${current.count}");
                   return current.count >= 2;
                 },
-
                 // TIPS: The bloc parameter
                 // bloc: counterBloc,
                 builder: (context, state) {
@@ -129,6 +136,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               }
             ),
+
+            // widget 3
+            BlocBuilder<VisibilityBloc, VisibilityState>(
+              builder: (context, state) {
+                return Visibility(
+                  visible: state.show,
+                  child: Container(
+                    color: Colors.purple,
+                    width: 200,
+                    height: 200,
+                  ),
+                );
+              }
+            )
+
           ],
         ),
       ),
@@ -152,6 +174,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
             tooltip: 'Decrement',
             child: const Icon(Icons.minimize),
+          ),
+
+          FloatingActionButton(
+            onPressed: (){
+              context.read<VisibilityBloc>().add(VisibilityShowEvent());
+            },
+
+            tooltip: 'Show',
+            child: const Text("Show"),
+          ),
+
+          FloatingActionButton(
+            onPressed: (){
+              context.read<VisibilityBloc>().add(VisibilityHideEvent());
+            },
+
+            tooltip: 'Hide',
+            child: const Text("Hide"),
           ),
         ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
